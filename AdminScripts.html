@@ -1,0 +1,856 @@
+<script>
+  /**
+   * Lippo Plaza Baubau — Digital Service Portal
+   * Admin Panel Controller & CRUD Engine
+   * File: AdminScripts.html
+   */
+
+  // Admin Session State
+  const AdminState = {
+    token: sessionStorage.getItem('lpb_admin_token') || '',
+    admin: JSON.parse(sessionStorage.getItem('lpb_admin_user') || 'null'),
+    currentView: 'dashboard',
+    services: [],
+    categories: [],
+    settings: {},
+    isFirstRun: false
+  };
+
+  // Embedded Lucide Icons SVG map for Admin UI
+  const ADM_ICONS = {
+    'package': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>',
+    'truck': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18.5" r="2.5"/><circle cx="7" cy="18.5" r="2.5"/></svg>',
+    'hard-hat': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v2z"/><path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"/><path d="M4 15v-3a8 8 0 0 1 16 0v3"/></svg>',
+    'megaphone': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>',
+    'message-circle': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>',
+    'file-text': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
+    'building-2': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>',
+    'layout-grid': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>',
+    'shield': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>',
+    'chevron-right': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>',
+    'edit': '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>',
+    'trash': '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>'
+  };
+
+  function getAdmIconSvg(name) {
+    return ADM_ICONS[name] || ADM_ICONS['package'];
+  }
+
+  // App Initialization
+  document.addEventListener('DOMContentLoaded', () => {
+    setupNavigationEvents();
+    setupServiceModalPreviewEvents();
+    checkAuthAndInit();
+  });
+
+  /**
+   * Check authentication & first-run state
+   */
+  function checkAuthAndInit() {
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res && res.isFirstRun) {
+            AdminState.isFirstRun = true;
+            showLoginScreen(true);
+          } else if (AdminState.token) {
+            validateSessionToken();
+          } else {
+            showLoginScreen(false);
+          }
+        })
+        .apiCheckFirstRun();
+    } else {
+      // Local preview / test mode
+      console.log('Running in local Admin test preview');
+      if (AdminState.token) {
+        showDashboard();
+      } else {
+        showLoginScreen(false);
+      }
+    }
+  }
+
+  function validateSessionToken() {
+    google.script.run
+      .withSuccessHandler(res => {
+        if (res && res.valid) {
+          hideLoginScreen();
+          updateAdminProfileUI(res.admin);
+          loadDashboardData();
+        } else {
+          showToast('Sesi telah berakhir. Silakan login kembali.', 'info');
+          logout();
+        }
+      })
+      .apiValidateSession(AdminState.token);
+  }
+
+  /**
+   * Show/Hide Login Screen
+   */
+  function showLoginScreen(isFirstRun = false) {
+    const loginWrap = document.getElementById('loginScreenWrap');
+    const loginTitle = document.getElementById('loginTitle');
+    const loginSub = document.getElementById('loginSubtitle');
+    const nameGroup = document.getElementById('loginNameGroup');
+    const submitBtn = document.getElementById('btnLoginSubmit');
+
+    if (loginWrap) loginWrap.style.display = 'flex';
+
+    if (isFirstRun) {
+      if (loginTitle) loginTitle.textContent = 'Inisialisasi Super Admin';
+      if (loginSub) loginSub.textContent = 'Buat akun pengelola utama portal untuk pertama kali.';
+      if (nameGroup) nameGroup.style.display = 'block';
+      if (submitBtn) submitBtn.textContent = 'Buat Akun & Masuk';
+    } else {
+      if (loginTitle) loginTitle.textContent = 'Admin Panel';
+      if (loginSub) loginSub.textContent = 'Silakan masuk ke akun admin untuk melanjutkan.';
+      if (nameGroup) nameGroup.style.display = 'none';
+      if (submitBtn) submitBtn.textContent = 'Masuk';
+    }
+  }
+
+  function hideLoginScreen() {
+    const loginWrap = document.getElementById('loginScreenWrap');
+    if (loginWrap) loginWrap.style.display = 'none';
+  }
+
+  /**
+   * Handle Login / First Run Setup Submission
+   */
+  function handleLoginSubmit(e) {
+    if (e) e.preventDefault();
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const name = document.getElementById('loginName') ? document.getElementById('loginName').value.trim() : '';
+
+    if (!username || !password) {
+      showToast('Harap lengkapi username dan kata sandi.', 'error');
+      return;
+    }
+
+    const submitBtn = document.getElementById('btnLoginSubmit');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Memproses...';
+    }
+
+    if (AdminState.isFirstRun) {
+      google.script.run
+        .withSuccessHandler(res => {
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Masuk'; }
+          if (res && res.success) {
+            onLoginSuccess(res.data);
+          } else {
+            showToast(res ? res.error : 'Gagal membuat akun.', 'error');
+          }
+        })
+        .apiSetupInitialAdmin({ username, password, name });
+    } else {
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(res => {
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Masuk'; }
+            if (res && res.success) {
+              onLoginSuccess(res.data);
+            } else {
+              showToast(res ? res.error : 'Username atau kata sandi salah.', 'error');
+            }
+          })
+          .apiLogin(username, password);
+      } else {
+        // Standalone preview fallback
+        onLoginSuccess({
+          token: 'mock_token_' + Date.now(),
+          admin: { username: username, name: name || 'Gunawan Umar', role: 'super_admin' }
+        });
+      }
+    }
+  }
+
+  function onLoginSuccess(data) {
+    AdminState.token = data.token;
+    AdminState.admin = data.admin;
+    sessionStorage.setItem('lpb_admin_token', data.token);
+    sessionStorage.setItem('lpb_admin_user', JSON.stringify(data.admin));
+
+    hideLoginScreen();
+    updateAdminProfileUI(data.admin);
+    showToast(`Selamat datang, ${data.admin.name || data.admin.username}!`, 'success');
+    switchView('dashboard');
+    loadDashboardData();
+  }
+
+  function logout() {
+    if (AdminState.token && typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run.apiLogout(AdminState.token);
+    }
+    AdminState.token = '';
+    AdminState.admin = null;
+    sessionStorage.removeItem('lpb_admin_token');
+    sessionStorage.removeItem('lpb_admin_user');
+    showLoginScreen(false);
+  }
+
+  function updateAdminProfileUI(admin) {
+    if (!admin) return;
+    const nameEls = document.querySelectorAll('.sidebar-user-name');
+    const roleEls = document.querySelectorAll('.sidebar-user-role');
+    const avatarEls = document.querySelectorAll('.sidebar-avatar');
+
+    nameEls.forEach(el => el.textContent = admin.name || admin.username);
+    roleEls.forEach(el => el.textContent = (admin.role === 'super_admin' ? 'Super Administrator' : 'Administrator'));
+    avatarEls.forEach(el => {
+      const initial = (admin.name || admin.username || 'A').charAt(0).toUpperCase();
+      el.textContent = initial;
+    });
+  }
+
+  /**
+   * Navigation Controller (SPA Views)
+   */
+  function setupNavigationEvents() {
+    const menuItems = document.querySelectorAll('.menu-item');
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const view = item.getAttribute('data-view');
+        if (view) switchView(view);
+      });
+    });
+
+    const toggleBtn = document.getElementById('btnToggleSidebar');
+    const sidebar = document.getElementById('adminSidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+    }
+  }
+
+  function switchView(viewName) {
+    AdminState.currentView = viewName;
+
+    // Update active class on menu items
+    document.querySelectorAll('.menu-item').forEach(item => {
+      if (item.getAttribute('data-view') === viewName) {
+        item.classList.add('active');
+      } else {
+        item.classList.remove('active');
+      }
+    });
+
+    // Update views visibility
+    document.querySelectorAll('.admin-view').forEach(view => {
+      if (view.id === 'view-' + viewName) {
+        view.classList.add('active');
+      } else {
+        view.classList.remove('active');
+      }
+    });
+
+    // Update header title
+    const headerTitle = document.getElementById('headerPageTitle');
+    const titles = {
+      dashboard: 'Dashboard',
+      layanan: 'Manajemen Layanan',
+      kategori: 'Kategori Layanan',
+      tampilan: 'Tampilan & Branding',
+      media: 'Media & Aset',
+      pengaturan: 'Pengaturan Sistem',
+      admin: 'Manajemen Admin',
+      audit: 'Notifikasi & Log Aktivitas'
+    };
+    if (headerTitle) headerTitle.textContent = titles[viewName] || 'Admin Panel';
+
+    // Close mobile sidebar if open
+    const sidebar = document.getElementById('adminSidebar');
+    if (sidebar) sidebar.classList.remove('open');
+
+    // Trigger view-specific data loading
+    if (viewName === 'dashboard') loadDashboardData();
+    if (viewName === 'layanan') loadServicesData();
+    if (viewName === 'kategori') loadCategoriesData();
+    if (viewName === 'tampilan') loadSettingsData();
+    if (viewName === 'audit') loadAuditLogsData();
+  }
+
+  /**
+   * Dashboard Controller (Panel 2)
+   */
+  function loadDashboardData() {
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res && res.success) {
+            renderDashboardStats(res.data);
+          }
+        })
+        .apiGetDashboardStats(AdminState.token);
+    } else {
+      // Mock stats
+      renderDashboardStats({
+        totalServices: 8,
+        activeServices: 7,
+        inactiveServices: 1,
+        totalCategories: 3,
+        activeCategories: 2,
+        recentServices: [
+          { name: 'Izin Masuk Barang', created_at: '11 Sep 2026 21:00', is_active: true },
+          { name: 'Izin Keluar Barang', created_at: '11 Sep 2026 21:05', is_active: true }
+        ],
+        systemStatus: { sheets: 'Terhubung', appsScript: 'Aktif', portal: 'Online', adminPanel: 'Online' }
+      });
+    }
+  }
+
+  function renderDashboardStats(stats) {
+    if (!stats) return;
+    document.getElementById('statTotalServices').textContent = stats.totalServices || 0;
+    document.getElementById('statActiveServices').textContent = stats.activeServices || 0;
+    document.getElementById('statInactiveServices').textContent = stats.inactiveServices || 0;
+    document.getElementById('statActiveRatio').textContent = stats.totalServices ?
+      Math.round((stats.activeServices / stats.totalServices) * 100) + '% dari total' : '100%';
+
+    // Populate Recent Services in Dashboard
+    const recentTable = document.getElementById('recentServicesTableBody');
+    if (recentTable && stats.recentServices) {
+      recentTable.innerHTML = '';
+      stats.recentServices.forEach(srv => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${escapeHtml(srv.name)}</strong></td>
+          <td><span class="status-toggle-pill ${srv.is_active ? 'active' : 'inactive'}">${srv.is_active ? 'Aktif' : 'Nonaktif'}</span></td>
+          <td><small class="text-muted">${srv.created_at}</small></td>
+        `;
+        recentTable.appendChild(tr);
+      });
+    }
+  }
+
+  /**
+   * Services CRUD Controller (Panel 3 & 4)
+   */
+  function loadServicesData() {
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res && res.success) {
+            AdminState.services = res.data;
+            renderServicesTable(AdminState.services);
+          }
+        })
+        .apiGetAllServices(AdminState.token);
+    } else if (window.MOCK_DATA) {
+      AdminState.services = window.MOCK_DATA.data.services;
+      renderServicesTable(AdminState.services);
+    }
+  }
+
+  function renderServicesTable(services) {
+    const tbody = document.getElementById('servicesTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    const filterQuery = (document.getElementById('inputSearchServices') ? document.getElementById('inputSearchServices').value : '').toLowerCase();
+    const filterCat = document.getElementById('selectFilterCategory') ? document.getElementById('selectFilterCategory').value : '';
+
+    const filtered = services.filter(s => {
+      const matchQuery = !filterQuery || s.name.toLowerCase().includes(filterQuery) || (s.description || '').toLowerCase().includes(filterQuery);
+      const matchCat = !filterCat || s.category_id === filterCat;
+      return matchQuery && matchCat;
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 24px; color: #94a3b8;">Tidak ada data layanan.</td></tr>';
+      return;
+    }
+
+    filtered.forEach((srv, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${index + 1}</td>
+        <td>
+          <div class="table-service-name">
+            <div class="table-service-icon" style="background-color: ${srv.icon_background || '#1e88e5'};">
+              ${getAdmIconSvg(srv.icon || 'package')}
+            </div>
+            <div>
+              <div style="font-weight: 600;">${escapeHtml(srv.name)}</div>
+              <div style="font-size: 11.5px; color: #64748b;">${escapeHtml(srv.description || '')}</div>
+            </div>
+          </div>
+        </td>
+        <td>${escapeHtml(srv.category_name || srv.category_id)}</td>
+        <td>
+          <button class="status-toggle-pill ${srv.is_active ? 'active' : 'inactive'}" onclick="toggleServiceStatus('${srv.id}', ${!srv.is_active})">
+            ${srv.is_active ? '● Aktif' : '○ Nonaktif'}
+          </button>
+        </td>
+        <td>${srv.sort_order || 1}</td>
+        <td>
+          <div class="table-actions-cell">
+            <button class="btn-action-icon" title="Edit Layanan" onclick="openEditServiceModal('${srv.id}')">
+              ${ADM_ICONS['edit']}
+            </button>
+            <button class="btn-action-icon danger" title="Nonaktifkan / Hapus" onclick="confirmDeleteService('${srv.id}', '${escapeHtml(srv.name)}')">
+              ${ADM_ICONS['trash']}
+            </button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function toggleServiceStatus(serviceId, newStatus) {
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res && res.success) {
+            showToast(`Status layanan diperbarui menjadi ${newStatus ? 'Aktif' : 'Nonaktif'}.`, 'success');
+            loadServicesData();
+          } else {
+            showToast('Gagal mengubah status.', 'error');
+          }
+        })
+        .apiUpdateService(AdminState.token, serviceId, { is_active: newStatus });
+    } else {
+      const srv = AdminState.services.find(s => s.id === serviceId);
+      if (srv) srv.is_active = newStatus;
+      renderServicesTable(AdminState.services);
+      showToast('Status layanan diperbarui.', 'success');
+    }
+  }
+
+  function confirmDeleteService(serviceId, serviceName) {
+    if (confirm(`Yakin ingin menonaktifkan layanan "${serviceName}"?`)) {
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(res => {
+            if (res && res.success) {
+              showToast('Layanan berhasil dinonaktifkan.', 'success');
+              loadServicesData();
+            } else {
+              showToast('Gagal menghapus layanan.', 'error');
+            }
+          })
+          .apiDeleteService(AdminState.token, serviceId);
+      } else {
+        AdminState.services = AdminState.services.filter(s => s.id !== serviceId);
+        renderServicesTable(AdminState.services);
+        showToast('Layanan dihapus.', 'success');
+      }
+    }
+  }
+
+  /**
+   * Tambah / Edit Layanan Modal with LIVE PREVIEW (Panel 4)
+   */
+  function setupServiceModalPreviewEvents() {
+    const inputName = document.getElementById('modalSrvName');
+    const inputDesc = document.getElementById('modalSrvDesc');
+    const selectIcon = document.getElementById('modalSrvIcon');
+    const inputBg = document.getElementById('modalSrvIconBg');
+
+    const updatePreview = () => {
+      const nameVal = inputName.value.trim() || 'Nama Layanan';
+      const descVal = inputDesc.value.trim() || 'Deskripsi singkat layanan';
+      const iconVal = selectIcon.value || 'package';
+      const bgVal = inputBg.value || '#1e88e5';
+
+      document.getElementById('previewCardTitle').textContent = nameVal;
+      document.getElementById('previewCardDesc').textContent = descVal;
+      document.getElementById('previewCardIconBox').style.backgroundColor = bgVal;
+      document.getElementById('previewCardIconBox').innerHTML = getAdmIconSvg(iconVal);
+    };
+
+    if (inputName) inputName.addEventListener('input', updatePreview);
+    if (inputDesc) inputDesc.addEventListener('input', updatePreview);
+    if (selectIcon) selectIcon.addEventListener('change', updatePreview);
+    if (inputBg) inputBg.addEventListener('input', updatePreview);
+
+    // Color preset click handling
+    document.querySelectorAll('.color-pill-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const color = btn.getAttribute('data-color');
+        if (inputBg) inputBg.value = color;
+        document.querySelectorAll('.color-pill-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        updatePreview();
+      });
+    });
+  }
+
+  function openAddServiceModal() {
+    document.getElementById('modalServiceTitle').textContent = 'Tambah Layanan Baru';
+    document.getElementById('modalServiceId').value = '';
+    document.getElementById('modalSrvName').value = '';
+    document.getElementById('modalSrvDesc').value = '';
+    document.getElementById('modalSrvUrl').value = '';
+    document.getElementById('modalSrvSort').value = AdminState.services.length + 1;
+    document.getElementById('modalSrvIcon').value = 'package';
+    document.getElementById('modalSrvIconBg').value = '#1e88e5';
+    document.getElementById('modalSrvActive').checked = true;
+
+    // Trigger preview update
+    document.getElementById('modalSrvName').dispatchEvent(new Event('input'));
+    document.getElementById('modalService').classList.add('show');
+  }
+
+  function openEditServiceModal(id) {
+    const srv = AdminState.services.find(s => s.id === id);
+    if (!srv) return;
+
+    document.getElementById('modalServiceTitle').textContent = 'Edit Layanan';
+    document.getElementById('modalServiceId').value = srv.id;
+    document.getElementById('modalSrvName').value = srv.name;
+    document.getElementById('modalSrvDesc').value = srv.description || '';
+    document.getElementById('modalSrvUrl').value = srv.url || '';
+    document.getElementById('modalSrvCat').value = srv.category_id;
+    document.getElementById('modalSrvSort').value = srv.sort_order || 1;
+    document.getElementById('modalSrvIcon').value = srv.icon || 'package';
+    document.getElementById('modalSrvIconBg').value = srv.icon_background || '#1e88e5';
+    document.getElementById('modalSrvActive').checked = srv.is_active;
+
+    // Trigger preview update
+    document.getElementById('modalSrvName').dispatchEvent(new Event('input'));
+    document.getElementById('modalService').classList.add('show');
+  }
+
+  function closeServiceModal() {
+    document.getElementById('modalService').classList.remove('show');
+  }
+
+  function handleSaveService() {
+    const id = document.getElementById('modalServiceId').value;
+    const name = document.getElementById('modalSrvName').value.trim();
+    const category_id = document.getElementById('modalSrvCat').value;
+    const description = document.getElementById('modalSrvDesc').value.trim();
+    const url = document.getElementById('modalSrvUrl').value.trim();
+    const icon = document.getElementById('modalSrvIcon').value;
+    const icon_background = document.getElementById('modalSrvIconBg').value;
+    const sort_order = Number(document.getElementById('modalSrvSort').value || 1);
+    const is_active = document.getElementById('modalSrvActive').checked;
+
+    if (!name || !category_id || !url) {
+      showToast('Nama, kategori, dan URL layanan wajib diisi.', 'error');
+      return;
+    }
+
+    if (!url.startsWith('https://') && url !== '#') {
+      showToast('URL layanan wajib menggunakan protokol HTTPS.', 'error');
+      return;
+    }
+
+    const payload = {
+      name, category_id, description, url, icon, icon_background, sort_order, is_active
+    };
+
+    if (id) {
+      // Update
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(res => {
+            if (res && res.success) {
+              showToast('Layanan berhasil diperbarui.', 'success');
+              closeServiceModal();
+              loadServicesData();
+            } else {
+              showToast(res ? res.error : 'Gagal memperbarui layanan.', 'error');
+            }
+          })
+          .apiUpdateService(AdminState.token, id, payload);
+      } else {
+        const idx = AdminState.services.findIndex(s => s.id === id);
+        if (idx !== -1) AdminState.services[idx] = { ...AdminState.services[idx], ...payload };
+        closeServiceModal();
+        renderServicesTable(AdminState.services);
+        showToast('Layanan diperbarui.', 'success');
+      }
+    } else {
+      // Create
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(res => {
+            if (res && res.success) {
+              showToast('Layanan baru berhasil ditambahkan.', 'success');
+              closeServiceModal();
+              loadServicesData();
+            } else {
+              showToast(res ? res.error : 'Gagal menambah layanan.', 'error');
+            }
+          })
+          .apiCreateService(AdminState.token, payload);
+      } else {
+        payload.id = 'srv_' + Date.now();
+        AdminState.services.push(payload);
+        closeServiceModal();
+        renderServicesTable(AdminState.services);
+        showToast('Layanan baru ditambahkan.', 'success');
+      }
+    }
+  }
+
+  /**
+   * Categories CRUD Controller (Panel 5)
+   */
+  function loadCategoriesData() {
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res && res.success) {
+            AdminState.categories = res.data;
+            renderCategoriesTable(AdminState.categories);
+            populateCategoryDropdowns(AdminState.categories);
+          }
+        })
+        .apiGetAllCategories(AdminState.token);
+    } else if (window.MOCK_DATA) {
+      AdminState.categories = window.MOCK_DATA.data.categories;
+      renderCategoriesTable(AdminState.categories);
+      populateCategoryDropdowns(AdminState.categories);
+    }
+  }
+
+  function renderCategoriesTable(categories) {
+    const tbody = document.getElementById('categoriesTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    categories.forEach((cat, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${index + 1}</td>
+        <td><strong>${escapeHtml(cat.name)}</strong><br><small style="color:#64748b;">${escapeHtml(cat.description || '')}</small></td>
+        <td>
+          <div style="display:inline-flex; align-items:center; gap:6px; color:#0054a6;">
+            <span style="width:18px; height:18px;">${getAdmIconSvg(cat.icon || 'building-2')}</span>
+            <span>${cat.icon}</span>
+          </div>
+        </td>
+        <td>
+          <button class="status-toggle-pill ${cat.is_active ? 'active' : 'inactive'}" onclick="toggleCategoryStatus('${cat.id}', ${!cat.is_active})">
+            ${cat.is_active ? '● Aktif' : '○ Nonaktif'}
+          </button>
+        </td>
+        <td>${cat.sort_order || 1}</td>
+        <td>
+          <button class="btn-action-icon" title="Edit Kategori" onclick="openEditCategoryModal('${cat.id}')">
+            ${ADM_ICONS['edit']}
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function populateCategoryDropdowns(categories) {
+    const modalCatSelect = document.getElementById('modalSrvCat');
+    const filterCatSelect = document.getElementById('selectFilterCategory');
+
+    if (modalCatSelect) {
+      modalCatSelect.innerHTML = '<option value="">-- Pilih Kategori --</option>';
+      categories.forEach(c => {
+        modalCatSelect.innerHTML += `<option value="${c.id}">${escapeHtml(c.name)}</option>`;
+      });
+    }
+
+    if (filterCatSelect) {
+      filterCatSelect.innerHTML = '<option value="">Semua Kategori</option>';
+      categories.forEach(c => {
+        filterCatSelect.innerHTML += `<option value="${c.id}">${escapeHtml(c.name)}</option>`;
+      });
+    }
+  }
+
+  function toggleCategoryStatus(catId, newStatus) {
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res && res.success) {
+            showToast('Status kategori berhasil diperbarui.', 'success');
+            loadCategoriesData();
+          } else {
+            showToast('Gagal mengubah status kategori.', 'error');
+          }
+        })
+        .apiUpdateCategory(AdminState.token, catId, { is_active: newStatus });
+    } else {
+      const cat = AdminState.categories.find(c => c.id === catId);
+      if (cat) cat.is_active = newStatus;
+      renderCategoriesTable(AdminState.categories);
+      showToast('Status kategori diperbarui.', 'success');
+    }
+  }
+
+  /**
+   * Tampilan & Branding Controller (Panel 6)
+   */
+  function loadSettingsData() {
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res && res.success) {
+            populateSettingsForm(res.data.settings);
+          }
+        })
+        .apiGetPublicPortalData();
+    }
+  }
+
+  function populateSettingsForm(settings) {
+    if (!settings) return;
+    if (document.getElementById('inputPortalName')) document.getElementById('inputPortalName').value = settings.portal_name || '';
+    if (document.getElementById('inputTagline')) document.getElementById('inputTagline').value = settings.tagline || '';
+    if (document.getElementById('inputWelcomeTitle')) document.getElementById('inputWelcomeTitle').value = settings.welcome_title || '';
+    if (document.getElementById('inputWelcomeDesc')) document.getElementById('inputWelcomeDesc').value = settings.welcome_description || '';
+    if (document.getElementById('inputFooterTitle')) document.getElementById('inputFooterTitle').value = settings.footer_title || '';
+    if (document.getElementById('inputFooterCopyright')) document.getElementById('inputFooterCopyright').value = settings.footer_copyright || '';
+  }
+
+  function handleSaveSettings() {
+    const payload = {
+      portal_name: document.getElementById('inputPortalName').value.trim(),
+      tagline: document.getElementById('inputTagline').value.trim(),
+      welcome_title: document.getElementById('inputWelcomeTitle').value.trim(),
+      welcome_description: document.getElementById('inputWelcomeDesc').value.trim(),
+      footer_title: document.getElementById('inputFooterTitle').value.trim(),
+      footer_copyright: document.getElementById('inputFooterCopyright').value.trim()
+    };
+
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res && res.success) {
+            showToast('Pengaturan portal berhasil disimpan.', 'success');
+          } else {
+            showToast('Gagal menyimpan pengaturan.', 'error');
+          }
+        })
+        .apiUpdateSettings(AdminState.token, payload);
+    } else {
+      showToast('Pengaturan disimpan.', 'success');
+    }
+  }
+
+  /**
+   * Google Drive Asset Upload Handler
+   */
+  function handleAssetUpload(inputEl, assetType) {
+    const file = inputEl.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('Ukuran file maksimal 5 MB.', 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    showToast(`Mengunggah ${assetType} ke Google Drive...`, 'info');
+
+    reader.onload = function(e) {
+      const base64Data = e.target.result;
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(res => {
+            if (res && res.success) {
+              showToast(`${assetType} berhasil diunggah ke Google Drive!`, 'success');
+              if (assetType === 'background' && document.getElementById('previewBackgroundImg')) {
+                document.getElementById('previewBackgroundImg').src = res.data.directUrl;
+              }
+              if (assetType === 'logo' && document.getElementById('previewLogoImg')) {
+                document.getElementById('previewLogoImg').src = res.data.directUrl;
+              }
+            } else {
+              showToast(res ? res.error : 'Gagal mengunggah file.', 'error');
+            }
+          })
+          .apiUploadAsset(AdminState.token, {
+            base64Data: base64Data,
+            filename: file.name,
+            mimeType: file.type,
+            assetType: assetType
+          });
+      } else {
+        showToast('File berhasil diproses (simulasi).', 'success');
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  /**
+   * Audit Logs Controller (Panel 12)
+   */
+  function loadAuditLogsData() {
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res && res.success) {
+            renderAuditLogsTable(res.data);
+          }
+        })
+        .apiGetAuditLogs(AdminState.token, 50);
+    } else {
+      renderAuditLogsTable([
+        { timestamp: '11 Sep 2026 21:05', action: 'LOGIN_SUCCESS', username: 'admin', entity: 'Admins', details: 'Login admin berhasil' },
+        { timestamp: '11 Sep 2026 21:10', action: 'SERVICE_UPDATE', username: 'admin', entity: 'Services', details: 'Layanan diperbarui: Izin Masuk Barang' }
+      ]);
+    }
+  }
+
+  function renderAuditLogsTable(logs) {
+    const tbody = document.getElementById('auditTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (!logs || logs.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 24px; color: #94a3b8;">Belum ada log aktivitas.</td></tr>';
+      return;
+    }
+
+    logs.forEach(log => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><small>${log.timestamp}</small></td>
+        <td><strong>${escapeHtml(log.username)}</strong></td>
+        <td><span class="status-toggle-pill active" style="background:#e0f2fe; color:#0369a1;">${escapeHtml(log.action)}</span></td>
+        <td>${escapeHtml(log.entity)} ${log.entity_id ? `(${log.entity_id})` : ''}</td>
+        <td><small style="color:#64748b;">${escapeHtml(log.details)}</small></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  /**
+   * Toast Alerts Feedback
+   */
+  function showToast(message, type = 'info') {
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toastContainer';
+      container.className = 'toast-container';
+      document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast-alert ${type}`;
+    toast.innerHTML = `<span>${escapeHtml(message)}</span>`;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(10px)';
+      toast.style.transition = 'all 0.3s ease';
+      setTimeout(() => toast.remove(), 300);
+    }, 3500);
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+</script>

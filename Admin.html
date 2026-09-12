@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Lippo Plaza Baubau Digital Service Portal</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <?!= include('AdminStyles'); ?>
+</head>
+<body class="admin-body">
+
+  <!-- ==========================================================================
+       LOGIN & INITIAL SETUP SCREEN (Panel 1 of ref1.png)
+       ========================================================================== -->
+  <div id="loginScreenWrap" class="login-screen-wrap">
+    <div class="login-card">
+      <div class="login-brand-badge">LPB</div>
+      <h2 id="loginTitle" class="login-title">LPB DIGITAL PORTAL</h2>
+      <p id="loginSubtitle" class="login-subtitle">Silakan masuk ke akun admin untuk melanjutkan</p>
+      
+      <form id="loginForm" class="login-form" onsubmit="handleLoginSubmit(event)">
+        <div class="form-group" id="loginNameGroup" style="display: none;">
+          <label class="form-label" for="loginName">Nama Lengkap Admin</label>
+          <input type="text" id="loginName" class="form-input" placeholder="contoh: Gunawan Umar">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="loginUsername">Username</label>
+          <input type="text" id="loginUsername" class="form-input" placeholder="Masukkan username admin" required autocomplete="username">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Kata Sandi</label>
+          <input type="password" id="loginPassword" class="form-input" placeholder="Masukkan kata sandi" required autocomplete="current-password">
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 12.5px;">
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: #475569;">
+            <input type="checkbox" id="rememberMe" checked> Ingat saya
+          </label>
+          <span style="color: var(--adm-blue-primary); cursor: pointer;" onclick="alert('Hubungi Super Administrator untuk reset kata sandi.')">Lupa password?</span>
+        </div>
+        
+        <button type="submit" id="btnLoginSubmit" class="btn-primary" style="width: 100%; justify-content: center; height: 42px;">
+          Masuk
+        </button>
+      </form>
+
+      <div class="login-footer-text">
+        <strong>LIPPO PLAZA BAUBAU</strong><br>
+        © 2026 Lippo Plaza Baubau. All rights reserved.
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MAIN ADMIN APP SHELL
+       ========================================================================== -->
+  <div class="admin-layout">
+
+    <!-- Sidebar Navigation -->
+    <aside id="adminSidebar" class="admin-sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo-icon">LPB</div>
+        <div class="sidebar-brand-text">
+          <h1>LPB PORTAL</h1>
+          <span>Admin Panel</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li>
+          <a class="menu-item active" data-view="dashboard">
+            <span class="menu-item-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+            </span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a class="menu-item" data-view="layanan">
+            <span class="menu-item-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+            </span>
+            <span>Layanan</span>
+          </a>
+        </li>
+        <li>
+          <a class="menu-item" data-view="kategori">
+            <span class="menu-item-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+            </span>
+            <span>Kategori</span>
+          </a>
+        </li>
+        <li>
+          <a class="menu-item" data-view="tampilan">
+            <span class="menu-item-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+            </span>
+            <span>Tampilan & Branding</span>
+          </a>
+        </li>
+        <li>
+          <a class="menu-item" data-view="media">
+            <span class="menu-item-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            </span>
+            <span>Media</span>
+          </a>
+        </li>
+        <li>
+          <a class="menu-item" data-view="pengaturan">
+            <span class="menu-item-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            </span>
+            <span>Pengaturan</span>
+          </a>
+        </li>
+        <li>
+          <a class="menu-item" data-view="admin">
+            <span class="menu-item-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </span>
+            <span>Admin</span>
+          </a>
+        </li>
+        <li>
+          <a class="menu-item" data-view="audit">
+            <span class="menu-item-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </span>
+            <span>Log Aktivitas</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-user">
+        <div class="sidebar-user-info">
+          <div class="sidebar-avatar">G</div>
+          <div class="sidebar-user-details">
+            <div class="sidebar-user-name">Gunawan Umar</div>
+            <div class="sidebar-user-role">Administrator</div>
+          </div>
+        </div>
+        <button class="btn-logout" title="Logout" onclick="logout()">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Body -->
+    <main class="admin-main">
+      <!-- Header Bar -->
+      <header class="admin-header">
+        <div class="header-left">
+          <button id="btnToggleSidebar" class="btn-toggle-sidebar" aria-label="Toggle Sidebar">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <h2 id="headerPageTitle" class="header-page-title">Dashboard</h2>
+        </div>
+        <div class="header-right">
+          <a href="./" target="_blank" class="header-portal-link" title="Buka Landing Page Publik di tab baru">
+            <span>Lihat Portal</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </header>
+
+      <!-- Content Views -->
+      <div class="admin-content">
+
+        <!-- ==================================================================
+             VIEW 1: DASHBOARD (Panel 2)
+             ================================================================== -->
+        <div id="view-dashboard" class="admin-view active">
+          <div class="dash-banner">
+            <div>
+              <h2>Dashboard</h2>
+              <p>Selamat datang di LPB Digital Portal Admin Panel</p>
+            </div>
+          </div>
+
+          <!-- KPI Stat Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-icon-box" style="background-color: #e0f2fe; color: #0284c7;">📊</div>
+              <div class="kpi-details">
+                <div class="kpi-label">Total Layanan</div>
+                <div id="statTotalServices" class="kpi-value">--</div>
+                <div class="kpi-sub">Semua katalog terdaftar</div>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon-box" style="background-color: #dcfce7; color: #16a34a;">✅</div>
+              <div class="kpi-details">
+                <div class="kpi-label">Layanan Aktif</div>
+                <div id="statActiveServices" class="kpi-value">--</div>
+                <div id="statActiveRatio" class="kpi-sub">--% dari total</div>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon-box" style="background-color: #fee2e2; color: #dc2626;">⏸️</div>
+              <div class="kpi-details">
+                <div class="kpi-label">Layanan Nonaktif</div>
+                <div id="statInactiveServices" class="kpi-value">--</div>
+                <div class="kpi-sub">Disembunyikan di portal</div>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon-box" style="background-color: #f3e8ff; color: #9333ea;">👁️</div>
+              <div class="kpi-details">
+                <div class="kpi-label">Status Portal</div>
+                <div class="kpi-value" style="font-size: 19px; color: #16a34a;">Online</div>
+                <div class="kpi-sub">Publik dapat mengakses</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Layout 2 Columns -->
+          <div class="dash-grid-2">
+            <!-- Left: Recent Services Table -->
+            <div class="card-box">
+              <div class="card-box-header">
+                <h3 class="card-box-title">Layanan Terbaru</h3>
+                <button class="btn-secondary" style="padding: 5px 12px; font-size: 12px;" onclick="switchView('layanan')">Lihat Semua</button>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Nama Layanan</th>
+                      <th>Status</th>
+                      <th>Dibuat</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentServicesTableBody">
+                    <tr><td colspan="3" style="text-align: center; color: #94a3b8; padding: 20px;">Memuat data...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right: Quick Actions & System Status -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+              <div class="card-box">
+                <div class="card-box-header">
+                  <h3 class="card-box-title">Quick Actions</h3>
+                </div>
+                <div class="quick-actions">
+                  <button class="btn-quick" onclick="switchView('layanan'); openAddServiceModal();">
+                    <span>➕ Tambah Layanan</span>
+                  </button>
+                  <button class="btn-quick" onclick="switchView('tampilan')">
+                    <span>🎨 Edit Tampilan</span>
+                  </button>
+                  <button class="btn-quick" onclick="switchView('pengaturan')">
+                    <span>⚙️ Pengaturan</span>
+                  </button>
+                  <a href="./" target="_blank" class="btn-quick" style="text-decoration: none;">
+                    <span>🌐 Buka Portal</span>
+                  </a>
+                </div>
+              </div>
+
+              <div class="card-box">
+                <div class="card-box-header">
+                  <h3 class="card-box-title">Status Sistem</h3>
+                </div>
+                <div class="status-list">
+                  <div class="status-item">
+                    <span>Google Sheets Database</span>
+                    <span class="badge-status badge-online">● Terhubung</span>
+                  </div>
+                  <div class="status-item">
+                    <span>Apps Script Engine</span>
+                    <span class="badge-status badge-online">● Aktif</span>
+                  </div>
+                  <div class="status-item">
+                    <span>Public Portal</span>
+                    <span class="badge-status badge-online">● Online</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             VIEW 2: MANAJEMEN LAYANAN (Panel 3 & 4)
+             ================================================================== -->
+        <div id="view-layanan" class="admin-view">
+          <div class="table-actions-bar">
+            <div class="table-filters">
+              <input type="text" id="inputSearchServices" class="input-search-table" placeholder="Cari nama atau deskripsi layanan..." oninput="renderServicesTable(AdminState.services)">
+              <select id="selectFilterCategory" class="select-filter" onchange="renderServicesTable(AdminState.services)">
+                <option value="">Semua Kategori</option>
+              </select>
+            </div>
+            <button class="btn-primary" onclick="openAddServiceModal()">
+              <span>+ Tambah Layanan</span>
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">No</th>
+                  <th>Nama Layanan</th>
+                  <th>Kategori</th>
+                  <th>Status</th>
+                  <th>Urutan</th>
+                  <th style="width: 90px;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="servicesTableBody">
+                <tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 24px;">Memuat data layanan...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             VIEW 3: KATEGORI LAYANAN (Panel 5)
+             ================================================================== -->
+        <div id="view-kategori" class="admin-view">
+          <div class="table-actions-bar">
+            <p style="color: #64748b; font-size: 13.5px;">Kelola kategori layanan. Kategori nonaktif tidak akan tampil di halaman publik.</p>
+            <button class="btn-primary" onclick="alert('Untuk menambah kategori baru, gunakan fungsi Tambah Kategori.')">
+              <span>+ Tambah Kategori</span>
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">No</th>
+                  <th>Nama Kategori</th>
+                  <th>Ikon</th>
+                  <th>Status</th>
+                  <th>Urutan</th>
+                  <th style="width: 80px;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="categoriesTableBody">
+                <tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 24px;">Memuat data kategori...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             VIEW 4: TAMPILAN & BRANDING (Panel 6)
+             ================================================================== -->
+        <div id="view-tampilan" class="admin-view">
+          <div class="card-box" style="max-width: 800px; margin-bottom: 24px;">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Identitas & Teks Portal</h3>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="inputPortalName">Nama Portal</label>
+              <input type="text" id="inputPortalName" class="form-input" placeholder="Lippo Plaza Baubau">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputTagline">Tagline Portal</label>
+              <input type="text" id="inputTagline" class="form-input" placeholder="One Portal · All Services">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputWelcomeTitle">Judul Welcome Banner</label>
+              <input type="text" id="inputWelcomeTitle" class="form-input" placeholder="Selamat Datang">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputWelcomeDesc">Deskripsi Welcome Banner</label>
+              <input type="text" id="inputWelcomeDesc" class="form-input" placeholder="Akses layanan digital Lippo Plaza Baubau">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputFooterTitle">Judul Footer</label>
+              <input type="text" id="inputFooterTitle" class="form-input" placeholder="LIPPO PLAZA BAUBAU">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputFooterCopyright">Teks Hak Cipta</label>
+              <input type="text" id="inputFooterCopyright" class="form-input" placeholder="© 2026 Lippo Plaza Baubau. All rights reserved.">
+            </div>
+
+            <button class="btn-primary" onclick="handleSaveSettings()">Simpan Pengaturan</button>
+          </div>
+
+          <!-- Media Assets Upload to Drive -->
+          <div class="card-box" style="max-width: 800px;">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Foto Gedung & Background (Google Drive)</h3>
+            </div>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+              Pilih foto resolusi tinggi untuk latar belakang hero header gedung Lippo Plaza Baubau. File akan disimpan secara otomatis di Google Drive folder khusus.
+            </p>
+
+            <div style="display: flex; gap: 16px; align-items: center;">
+              <input type="file" id="fileBackground" accept="image/png,image/jpeg,image/webp" style="display: none;" onchange="handleAssetUpload(this, 'background')">
+              <button class="btn-secondary" onclick="document.getElementById('fileBackground').click()">
+                📁 Pilih & Upload Background
+              </button>
+              <span style="font-size: 12px; color: #94a3b8;">Format: JPG, PNG, WebP (Maks 5 MB)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             VIEW 5: MEDIA
+             ================================================================== -->
+        <div id="view-media" class="admin-view">
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Google Drive Asset Storage</h3>
+            </div>
+            <p style="color: #64748b; font-size: 13.5px; margin-bottom: 20px;">
+              Semua aset gambar (logo, hero background, dsb.) dikelola secara terisolasi pada folder Drive <strong>"Lippo Plaza Baubau Portal Assets"</strong> untuk menjamin keamanan dan izin akses publik.
+            </p>
+            <button class="btn-secondary" onclick="switchView('tampilan')">Kelola Aset di Tampilan & Branding</button>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             VIEW 6: PENGATURAN
+             ================================================================== -->
+        <div id="view-pengaturan" class="admin-view">
+          <div class="card-box" style="max-width: 700px;">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Informasi Sistem</h3>
+            </div>
+            <div class="status-list" style="margin-bottom: 20px;">
+              <div class="status-item">
+                <span>Versi Aplikasi</span>
+                <strong>1.0.0 (Tahun 2026)</strong>
+              </div>
+              <div class="status-item">
+                <span>Database Engine</span>
+                <strong>Google Sheets REST ORM</strong>
+              </div>
+              <div class="status-item">
+                <span>File Storage</span>
+                <strong>Google Drive API Dedicated Folder</strong>
+              </div>
+            </div>
+            <button class="btn-secondary" onclick="if(confirm('Jalankan inisialisasi ulang database idempotent? Data yang ada tidak akan terhapus.')){ google.script.run.withSuccessHandler(()=>{showToast('Database terverifikasi!','success')}).apiInitDatabase(); }">
+              Verifikasi & Inisialisasi Database
+            </button>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             VIEW 7: MANAJEMEN ADMIN
+             ================================================================== -->
+        <div id="view-admin" class="admin-view">
+          <div class="card-box" style="max-width: 600px;">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Ubah Kata Sandi Admin</h3>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inputCurrentPass">Kata Sandi Saat Ini</label>
+              <input type="password" id="inputCurrentPass" class="form-input" placeholder="Masukkan kata sandi lama">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inputNewPass">Kata Sandi Baru</label>
+              <input type="password" id="inputNewPass" class="form-input" placeholder="Minimal 6 karakter">
+            </div>
+            <button class="btn-primary" onclick="
+              const cur = document.getElementById('inputCurrentPass').value;
+              const nw = document.getElementById('inputNewPass').value;
+              if(!cur || !nw) { showToast('Harap lengkapi semua kolom password.', 'error'); return; }
+              google.script.run.withSuccessHandler(r => {
+                if(r.success) { showToast('Kata sandi berhasil diubah!', 'success'); document.getElementById('inputCurrentPass').value=''; document.getElementById('inputNewPass').value=''; }
+                else { showToast(r.error, 'error'); }
+              }).apiChangePassword(AdminState.token, cur, nw);
+            ">Simpan Kata Sandi</button>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             VIEW 8: LOG AKTIVITAS (Panel 12)
+             ================================================================== -->
+        <div id="view-audit" class="admin-view">
+          <div class="card-box-header" style="margin-bottom: 16px;">
+            <h3 class="card-box-title">Riwayat Notifikasi & Log Aktivitas Admin</h3>
+            <button class="btn-secondary" style="padding: 6px 14px; font-size: 12px;" onclick="loadAuditLogsData()">🔄 Refresh</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 170px;">Tanggal / Waktu</th>
+                  <th style="width: 130px;">Oleh</th>
+                  <th style="width: 160px;">Aktivitas</th>
+                  <th style="width: 130px;">Entitas</th>
+                  <th>Detail Perubahan</th>
+                </tr>
+              </thead>
+              <tbody id="auditTableBody">
+                <tr><td colspan="5" style="text-align: center; color: #94a3b8; padding: 24px;">Memuat riwayat log...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: TAMBAH / EDIT LAYANAN DENGAN LIVE PREVIEW (Panel 4 of ref1.png)
+       ========================================================================== -->
+  <div id="modalService" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modalServiceTitle" class="modal-title">Tambah Layanan Baru</h3>
+        <button class="modal-close" onclick="closeServiceModal()">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="modal-split">
+          <!-- Left: Input Form -->
+          <div>
+            <input type="hidden" id="modalServiceId">
+            
+            <div class="form-group">
+              <label class="form-label" for="modalSrvName">Nama Layanan *</label>
+              <input type="text" id="modalSrvName" class="form-input" placeholder="contoh: Izin Masuk Barang">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="modalSrvCat">Kategori *</label>
+              <select id="modalSrvCat" class="form-select">
+                <option value="cat_tenant">LAYANAN TENANT</option>
+                <option value="cat_umum">LAYANAN LAINNYA</option>
+                <option value="cat_internal">LAYANAN INTERNAL MANAGEMENT</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="modalSrvDesc">Deskripsi Singkat *</label>
+              <textarea id="modalSrvDesc" class="form-textarea" placeholder="contoh: Pengajuan barang masuk"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="modalSrvUrl">URL Formulir Google Apps Script *</label>
+              <input type="url" id="modalSrvUrl" class="form-input" placeholder="https://script.google.com/macros/s/.../exec">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="form-group">
+                <label class="form-label" for="modalSrvIcon">Ikon</label>
+                <select id="modalSrvIcon" class="form-select">
+                  <option value="package">Package / Box</option>
+                  <option value="truck">Truck / Pengiriman</option>
+                  <option value="hard-hat">Hard Hat / Pekerjaan</option>
+                  <option value="megaphone">Megaphone / Promosi</option>
+                  <option value="message-circle">Chat / Saran</option>
+                  <option value="file-text">Document / Lainnya</option>
+                  <option value="building-2">Building / Gedung</option>
+                  <option value="shield">Shield / Keamanan</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="modalSrvSort">Urutan Tampil</label>
+                <input type="number" id="modalSrvSort" class="form-input" value="1" min="1">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Warna Background Ikon</label>
+              <input type="hidden" id="modalSrvIconBg" value="#1e88e5">
+              <div class="color-presets-bar">
+                <button type="button" class="color-pill-btn selected" style="background-color: #1e88e5;" data-color="#1e88e5"></button>
+                <button type="button" class="color-pill-btn" style="background-color: #43a047;" data-color="#43a047"></button>
+                <button type="button" class="color-pill-btn" style="background-color: #fb8c00;" data-color="#fb8c00"></button>
+                <button type="button" class="color-pill-btn" style="background-color: #8e24aa;" data-color="#8e24aa"></button>
+                <button type="button" class="color-pill-btn" style="background-color: #00acc1;" data-color="#00acc1"></button>
+                <button type="button" class="color-pill-btn" style="background-color: #546e7a;" data-color="#546e7a"></button>
+                <button type="button" class="color-pill-btn" style="background-color: #0054a6;" data-color="#0054a6"></button>
+                <button type="button" class="color-pill-btn" style="background-color: #e53935;" data-color="#e53935"></button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer;">
+                <input type="checkbox" id="modalSrvActive" checked> Layanan Aktif (Tampil di portal publik)
+              </label>
+            </div>
+          </div>
+
+          <!-- Right: Interactive Live Preview Card (Matches Panel 4) -->
+          <div class="live-preview-box">
+            <div class="preview-box-label">Preview Layanan</div>
+            <div style="width: 100%; max-width: 290px;">
+              <div class="service-card" style="pointer-events: none; margin: 0; box-shadow: 0 4px 14px rgba(0, 54, 110, 0.08); background: #ffffff; border-radius: 16px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; border: 1px solid #eaf0f8;">
+                <div id="previewCardIconBox" class="card-icon-box" style="width: 44px; height: 44px; border-radius: 13px; background-color: #1e88e5; display: flex; align-items: center; justify-content: center; color: #fff;">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+                </div>
+                <div style="flex: 1; min-width: 0;">
+                  <div id="previewCardTitle" style="font-size: 14px; font-weight: 600; color: #172b4d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Nama Layanan</div>
+                  <div id="previewCardDesc" style="font-size: 11.5px; color: #7a8fa6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Deskripsi singkat layanan</div>
+                </div>
+                <div style="color: #9cb1c9; display: flex; align-items: center;">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                </div>
+              </div>
+            </div>
+            <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 16px;">
+              Card ini akan tampil secara identik pada halaman publik pengunjung/tenant.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" onclick="closeServiceModal()">Batal</button>
+        <button type="button" class="btn-primary" onclick="handleSaveService()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <?!= include('AdminScripts'); ?>
+</body>
+</html>

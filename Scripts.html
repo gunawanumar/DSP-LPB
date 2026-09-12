@@ -1,0 +1,263 @@
+<script>
+  /**
+   * Lippo Plaza Baubau — Digital Service Portal
+   * Public Client Logic & Interaction Engine
+   * File: Scripts.html
+   */
+
+  // Embedded High-Quality Lucide Icon SVG Map
+  const ICONS_SVG = {
+    'package': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>',
+    'truck': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18.5" r="2.5"/><circle cx="7" cy="18.5" r="2.5"/></svg>',
+    'hard-hat': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v2z"/><path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"/><path d="M4 15v-3a8 8 0 0 1 16 0v3"/></svg>',
+    'megaphone': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>',
+    'message-circle': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>',
+    'file-text': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
+    'building-2': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>',
+    'layout-grid': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>',
+    'shield': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>',
+    'chevron-right': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>',
+    'search': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+    'x': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+    'default': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>'
+  };
+
+  function getIconSvg(name) {
+    return ICONS_SVG[name] || ICONS_SVG['default'];
+  }
+
+  // Global State
+  let portalData = {
+    settings: {},
+    categories: [],
+    services: []
+  };
+
+  // DOM Elements
+  const servicesContainer = document.getElementById('servicesContainer');
+  const searchInput = document.getElementById('searchInput');
+  const searchClearBtn = document.getElementById('searchClearBtn');
+  const emptyState = document.getElementById('emptyState');
+  const heroBackground = document.getElementById('heroBgImg');
+  const portalNameEl = document.getElementById('portalNameText');
+  const portalTaglineEl = document.getElementById('portalTaglineText');
+  const footerTitleEl = document.getElementById('footerTitleText');
+  const footerCopyrightEl = document.getElementById('footerCopyrightText');
+
+  /**
+   * Initialize App & Fetch Data
+   */
+  document.addEventListener('DOMContentLoaded', () => {
+    setupSearchEvents();
+    loadPortalData();
+  });
+
+  /**
+   * Load data from server or use instant fallback
+   */
+  function loadPortalData() {
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(handleDataLoaded)
+        .withFailureHandler(handleDataError)
+        .apiGetPublicPortalData();
+    } else {
+      // Local preview / test mode data fallback
+      console.log('Running in standalone preview mode.');
+      if (window.MOCK_DATA) {
+        handleDataLoaded(window.MOCK_DATA);
+      }
+    }
+  }
+
+  function handleDataLoaded(response) {
+    if (!response || !response.success || !response.data) {
+      handleDataError(response ? response.error : 'Format data tidak valid');
+      return;
+    }
+
+    portalData = response.data;
+    applySettings(portalData.settings);
+    renderCategoriesAndServices(portalData.categories, portalData.services);
+  }
+
+  function handleDataError(err) {
+    console.warn('Gagal mengambil data server:', err);
+    // If we have local mock or previous data, keep it
+    if (portalData.services && portalData.services.length > 0) {
+      renderCategoriesAndServices(portalData.categories, portalData.services);
+    }
+  }
+
+  /**
+   * Apply dynamic settings to DOM
+   */
+  function applySettings(settings) {
+    if (!settings) return;
+    if (settings.tagline && portalTaglineEl) {
+      portalTaglineEl.innerHTML = escapeHtml(settings.tagline);
+    }
+    if (settings.footer_title && footerTitleEl) {
+      footerTitleEl.textContent = settings.footer_title;
+    }
+    if (settings.footer_copyright && footerCopyrightEl) {
+      footerCopyrightEl.textContent = settings.footer_copyright;
+    }
+    if (settings.background_url && heroBackground) {
+      heroBackground.src = settings.background_url;
+    }
+  }
+
+  /**
+   * Render Categories & Service Cards
+   */
+  function renderCategoriesAndServices(categories, services, filterText = '') {
+    if (!servicesContainer) return;
+    servicesContainer.innerHTML = '';
+
+    const query = filterText.trim().toLowerCase();
+    let totalVisible = 0;
+
+    categories.forEach(category => {
+      // Filter services belonging to this category
+      const categoryServices = services.filter(service => {
+        if (service.category_id !== category.id) return false;
+        if (!query) return true;
+
+        const nameMatch = (service.name || '').toLowerCase().includes(query);
+        const descMatch = (service.description || '').toLowerCase().includes(query);
+        const catMatch = (category.name || '').toLowerCase().includes(query);
+        return nameMatch || descMatch || catMatch;
+      });
+
+      if (categoryServices.length === 0) return;
+
+      totalVisible += categoryServices.length;
+
+      // Create Category Group
+      const group = document.createElement('div');
+      group.className = 'category-group';
+
+      // Header
+      const header = document.createElement('div');
+      header.className = 'category-header';
+      header.innerHTML = `
+        <div class="category-title-wrap">
+          <span class="category-icon" style="width: 18px; height: 18px;">
+            ${getIconSvg(category.icon || 'building-2')}
+          </span>
+          <span class="category-name">${escapeHtml(category.name)}</span>
+        </div>
+        <div class="category-chevron" style="width: 16px; height: 16px;">
+          ${getIconSvg('chevron-right')}
+        </div>
+      `;
+      group.appendChild(header);
+
+      // Services List
+      const list = document.createElement('div');
+      list.className = 'services-list';
+
+      categoryServices.forEach(service => {
+        const card = createServiceCard(service);
+        list.appendChild(card);
+      });
+
+      group.appendChild(list);
+      servicesContainer.appendChild(group);
+    });
+
+    // Handle Empty Search State
+    if (emptyState) {
+      if (totalVisible === 0) {
+        emptyState.style.display = 'block';
+      } else {
+        emptyState.style.display = 'none';
+      }
+    }
+  }
+
+  /**
+   * Build Individual Service Card
+   */
+  function createServiceCard(service) {
+    const card = document.createElement('div');
+    card.className = 'service-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', `${service.name} - ${service.description}`);
+
+    const iconBg = service.icon_background || '#1e88e5';
+    const iconName = service.icon || 'package';
+
+    card.innerHTML = `
+      <div class="card-icon-box" style="background-color: ${iconBg};">
+        ${getIconSvg(iconName)}
+      </div>
+      <div class="card-info">
+        <div class="card-title">${escapeHtml(service.name)}</div>
+        <div class="card-description">${escapeHtml(service.description || '')}</div>
+      </div>
+      <div class="card-arrow" style="width: 18px; height: 18px;">
+        ${getIconSvg('chevron-right')}
+      </div>
+    `;
+
+    // Click Handler: MUST open form in new tab, never iframe, never replace portal
+    card.addEventListener('click', () => {
+      openServiceUrl(service.url);
+    });
+
+    // Keyboard Accessibility
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openServiceUrl(service.url);
+      }
+    });
+
+    return card;
+  }
+
+  /**
+   * Safe external link launcher
+   */
+  function openServiceUrl(url) {
+    if (!url || url === '#') {
+      alert('Layanan ini akan segera tersedia.');
+      return;
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  /**
+   * Setup Search Filter Events
+   */
+  function setupSearchEvents() {
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', (e) => {
+      const val = e.target.value;
+      if (searchClearBtn) {
+        searchClearBtn.style.display = val.length > 0 ? 'block' : 'none';
+      }
+      renderCategoriesAndServices(portalData.categories, portalData.services, val);
+    });
+
+    if (searchClearBtn) {
+      searchClearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        searchClearBtn.style.display = 'none';
+        searchInput.focus();
+        renderCategoriesAndServices(portalData.categories, portalData.services, '');
+      });
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+</script>

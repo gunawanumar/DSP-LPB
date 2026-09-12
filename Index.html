@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Lippo Plaza Baubau — Digital Service Portal</title>
+  
+  <!-- Modern Clean Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <?!= include('Styles'); ?>
+</head>
+<body>
+
+  <!-- Mobile-First App Wrapper -->
+  <div class="portal-app-wrapper">
+
+    <!-- 1. HERO / HEADER SECTION -->
+    <header class="hero-container" id="heroHeader">
+      <!-- Background Building Photograph -->
+      <img id="heroBgImg" class="hero-bg-img" src="" alt="Lippo Plaza Baubau">
+      
+      <!-- Primary Blue Gradient Overlay (Left blue field, right reveals building) -->
+      <div class="hero-overlay"></div>
+      <div class="hero-overlay-vertical"></div>
+
+      <!-- Hero Typography & Branding -->
+      <div class="hero-content">
+        <div class="hero-brand-title">LIPPO PLAZA</div>
+        <div class="hero-brand-sub">B A U B A U</div>
+        <div class="hero-cyan-bar"></div>
+        <div class="hero-portal-title">DIGITAL SERVICE PORTAL</div>
+        <div class="hero-portal-tagline" id="portalTaglineText">
+          One Portal <span class="tagline-dot">•</span> All Services
+        </div>
+      </div>
+
+      <!-- Critical Curved White Lower Edge -->
+      <div class="hero-curve-wrapper">
+        <svg viewBox="0 0 400 48" preserveAspectRatio="none" class="hero-curve-svg">
+          <path d="M 0,22 C 75,44 145,44 235,26 C 305,12 360,9 400,20 L 400,48 L 0,48 Z" fill="#f2f7fc"></path>
+        </svg>
+      </div>
+    </header>
+
+    <!-- 2. WELCOME BANNER -->
+    <section class="welcome-section">
+      <div class="welcome-card">
+        <div class="welcome-left">
+          <span class="welcome-hand" aria-label="Waving hand">👋</span>
+          <div class="welcome-text">
+            <h2>Selamat Datang</h2>
+            <p>Akses layanan digital<br>Lippo Plaza Baubau</p>
+          </div>
+        </div>
+        <div class="welcome-graphic">
+          <!-- Subtle building & location pin illustration -->
+          <svg viewBox="0 0 100 75" fill="none" style="width: 100%; height: 100%;">
+            <!-- Soft cloud background -->
+            <path d="M25,50 A15,15 0 0,1 55,42 A18,18 0 0,1 85,46 A14,14 0 0,1 95,60 L15,60 A12,12 0 0,1 25,50 Z" fill="#d2e8fb" opacity="0.6"/>
+            <!-- Main Building Base -->
+            <rect x="35" y="24" width="46" height="42" rx="4" fill="#3b82f6" fill-opacity="0.85"/>
+            <!-- Left Wing -->
+            <rect x="22" y="36" width="16" height="30" rx="3" fill="#60a5fa" fill-opacity="0.75"/>
+            <!-- Right Wing -->
+            <rect x="78" y="36" width="16" height="30" rx="3" fill="#60a5fa" fill-opacity="0.75"/>
+            <!-- Windows Left -->
+            <rect x="26" y="42" width="8" height="6" rx="1" fill="#ffffff" fill-opacity="0.9"/>
+            <rect x="26" y="52" width="8" height="6" rx="1" fill="#ffffff" fill-opacity="0.9"/>
+            <!-- Windows Center -->
+            <rect x="42" y="30" width="8" height="6" rx="1" fill="#ffffff" fill-opacity="0.9"/>
+            <rect x="54" y="30" width="8" height="6" rx="1" fill="#ffffff" fill-opacity="0.9"/>
+            <rect x="66" y="30" width="8" height="6" rx="1" fill="#ffffff" fill-opacity="0.9"/>
+            <rect x="42" y="40" width="8" height="6" rx="1" fill="#ffffff" fill-opacity="0.9"/>
+            <rect x="66" y="40" width="8" height="6" rx="1" fill="#ffffff" fill-opacity="0.9"/>
+            <!-- Door -->
+            <rect x="52" y="46" width="12" height="20" rx="2" fill="#1e3a8a"/>
+            <!-- Windows Right -->
+            <rect x="82" y="42" width="8" height="6" rx="1" fill="#ffffff" fill-opacity="0.9"/>
+            <rect x="82" y="52" width="8" height="6" rx="1" fill="#ffffff" fill-opacity="0.9"/>
+            <!-- Location Pin Badge on Top -->
+            <g transform="translate(53, 14)">
+              <circle cx="5" cy="5" r="7" fill="#0054a6"/>
+              <circle cx="5" cy="5" r="2.5" fill="#ffffff"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. SEARCH INPUT SECTION -->
+    <section class="search-section">
+      <div class="search-box">
+        <div class="search-icon-wrapper" style="width: 20px; height: 20px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </svg>
+        </div>
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="Cari layanan..." 
+          autocomplete="off" 
+          aria-label="Cari layanan">
+        <button id="searchClearBtn" class="search-clear-btn" aria-label="Hapus pencarian">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- 4. SERVICE DIRECTORY CONTAINER -->
+    <main class="main-content">
+      <div id="servicesContainer">
+        <!-- Skeleton placeholders shown while loading -->
+        <div class="services-list" style="gap: 9px; padding: 0 16px;">
+          <div class="skeleton-card"><div class="skeleton-icon"></div><div class="skeleton-text"><div class="skeleton-line-title"></div><div class="skeleton-line-desc"></div></div></div>
+          <div class="skeleton-card"><div class="skeleton-icon"></div><div class="skeleton-text"><div class="skeleton-line-title"></div><div class="skeleton-line-desc"></div></div></div>
+          <div class="skeleton-card"><div class="skeleton-icon"></div><div class="skeleton-text"><div class="skeleton-line-title"></div><div class="skeleton-line-desc"></div></div></div>
+          <div class="skeleton-card"><div class="skeleton-icon"></div><div class="skeleton-text"><div class="skeleton-line-title"></div><div class="skeleton-line-desc"></div></div></div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="empty-state">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </svg>
+        </div>
+        <div class="empty-title">Layanan tidak ditemukan</div>
+        <div class="empty-subtitle">Silakan coba kata kunci lain atau periksa ejaan Anda.</div>
+      </div>
+    </main>
+
+    <!-- 5. FOOTER -->
+    <footer class="portal-footer">
+      <div class="footer-title" id="footerTitleText">LIPPO PLAZA BAUBAU</div>
+      <div class="footer-copyright" id="footerCopyrightText">© 2026 Lippo Plaza Baubau. All rights reserved.</div>
+    </footer>
+
+  </div>
+
+  <?!= include('Scripts'); ?>
+</body>
+</html>
