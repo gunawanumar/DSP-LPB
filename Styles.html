@@ -181,7 +181,22 @@
     border-radius: 2px;
     margin-bottom: 15px;
     box-shadow: 0 0 10px var(--brand-cyan-glow);
-  }
+    /* Tambahan animasi */
+    animation: pantulKiriKanan 2.0s infinite ease-in-out;
+}
+
+/* Keyframes untuk efek bergerak ke kiri dan kanan */
+@keyframes pantulKiriKanan {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-5px);
+    }
+    75% {
+        transform: translateX(35px);
+    }
+}
 
   .hero-portal-title {
     font-size: 19px;
@@ -580,7 +595,7 @@
   .portal-footer {
     background: linear-gradient(180deg, #003264 0%, #001f40 100%);
     color: #ffffff;
-    padding: 10px 16px 18px 16px;
+    padding: 10px 16px 10px 16px;
     text-align: center;
     position: relative;
   }
@@ -599,7 +614,7 @@
     letter-spacing: 1.2px;
     text-transform: uppercase;
     color: #ffffff;
-    margin-bottom: 6px;
+    margin-bottom: 1px;
   }
 
   .footer-copyright {

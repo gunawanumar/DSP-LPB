@@ -30,7 +30,7 @@
         
         <div class="form-group">
           <label class="form-label" for="loginUsername">Username</label>
-          <input type="text" id="loginUsername" class="form-input" placeholder="Masukkan username admin" required autocomplete="username">
+          <input type="text" id="loginUsername" class="form-input" placeholder="Masukkan username" required autocomplete="username">
         </div>
         
         <div class="form-group">
@@ -164,7 +164,7 @@
           <h2 id="headerPageTitle" class="header-page-title">Dashboard</h2>
         </div>
         <div class="header-right">
-          <a href="./" target="_blank" class="header-portal-link" title="Buka Landing Page Publik di tab baru">
+          <a href="https://script.google.com/macros/s/AKfycbyp9j6U9-0ngmuIpWdcpSQhEkHviNsS1nj-IeOQgc2cgAINZWXuBpzccVcidWcko5t6/exec" class="header-portal-link" title="Buka Landing Page Publik di tab baru">
             <span>Lihat Portal</span>
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           </a>
@@ -261,7 +261,7 @@
                   <button class="btn-quick" onclick="switchView('pengaturan')">
                     <span>⚙️ Pengaturan</span>
                   </button>
-                  <a href="./" target="_blank" class="btn-quick" style="text-decoration: none;">
+                  <a href="https://script.google.com/macros/s/AKfycbyp9j6U9-0ngmuIpWdcpSQhEkHviNsS1nj-IeOQgc2cgAINZWXuBpzccVcidWcko5t6/exec" class="btn-quick" style="text-decoration: none;">
                     <span>🌐 Buka Portal</span>
                   </a>
                 </div>
@@ -331,7 +331,11 @@
         <div id="view-kategori" class="admin-view">
           <div class="table-actions-bar">
             <p style="color: #64748b; font-size: 13.5px;">Kelola kategori layanan. Kategori nonaktif tidak akan tampil di halaman publik.</p>
-            <button class="btn-primary" onclick="alert('Untuk menambah kategori baru, gunakan fungsi Tambah Kategori.')">
+            <button
+              type="button"
+              class="btn-primary"
+              onclick="openAddCategoryModal()"
+            >
               <span>+ Tambah Kategori</span>
             </button>
           </div>
@@ -631,6 +635,157 @@
       </div>
     </div>
   </div>
+
+  <!-- ==========================================================================
+     MODAL: TAMBAH / EDIT KATEGORI
+     ========================================================================== -->
+<div id="modalCategory" class="modal-backdrop">
+
+  <div class="modal-dialog">
+
+    <div class="modal-header">
+      <h3 id="modalCategoryTitle" class="modal-title">
+        Tambah Kategori Baru
+      </h3>
+
+      <button
+        type="button"
+        class="modal-close"
+        onclick="closeCategoryModal()">
+        &times;
+      </button>
+    </div>
+
+
+    <div class="modal-body">
+
+      <input
+        type="hidden"
+        id="modalCategoryId">
+
+
+      <div class="form-group">
+
+        <label
+          class="form-label"
+          for="modalCatName">
+          Nama Kategori *
+        </label>
+
+        <input
+          type="text"
+          id="modalCatName"
+          class="form-input"
+          placeholder="Contoh: Layanan Tenant"
+          maxlength="100">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label
+          class="form-label"
+          for="modalCatDesc">
+          Deskripsi
+        </label>
+
+        <textarea
+          id="modalCatDesc"
+          class="form-textarea"
+          placeholder="Deskripsi singkat kategori"
+          maxlength="500"></textarea>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label
+          class="form-label"
+          for="modalCatIcon">
+          Ikon
+        </label>
+
+        <select
+          id="modalCatIcon"
+          class="form-select">
+
+          <option value="building-2">Building 2</option>
+          <option value="package">Package</option>
+          <option value="truck">Truck</option>
+          <option value="hard-hat">Hard Hat</option>
+          <option value="megaphone">Megaphone</option>
+          <option value="message-circle">Message Circle</option>
+          <option value="file-text">File Text</option>
+          <option value="folder">Folder</option>
+          <option value="users">Users</option>
+          <option value="settings">Settings</option>
+
+        </select>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label
+          class="form-label"
+          for="modalCatSort">
+          Urutan
+        </label>
+
+        <input
+          type="number"
+          id="modalCatSort"
+          class="form-input"
+          min="1"
+          step="1"
+          value="1">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label
+          class="form-label"
+          style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+
+          <input
+            type="checkbox"
+            id="modalCatActive"
+            checked>
+
+          <span>Kategori Aktif</span>
+
+        </label>
+
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button
+        type="button"
+        class="btn-secondary"
+        onclick="closeCategoryModal()">
+        Batal
+      </button>
+
+      <button
+        type="button"
+        class="btn-primary"
+        onclick="handleSaveCategory()">
+        Simpan
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
 
   <?!= include('AdminScripts'); ?>
 </body>
